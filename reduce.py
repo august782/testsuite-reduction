@@ -387,21 +387,6 @@ def randomize(mapping, rand_num_tests):
 
     return reduced_testsuite
 
-# Prints debug info such as size of test suites
-def print_info(total_statements, covered_statements, total_num_tests, selected_tests):
-    print 'Total statements: ' + str(len(total_statements))
-    print 'Covered Statements:' + str(len(covered_statements))    
-    selected_num_tests = len(selected_tests)
-
-
-    print "\Def{{{0}TotalTests}}{{{1}}}".format(project_name, str(total_num_tests))
-    print "\Def{{{0}SelectedTests}}{{{1}}}".format(project_name, str(selected_num_tests))
-
-    if total_num_tests != 0:
-        print "\Def{{{0}Ratio}}{{{1:.2f}}}".format(project_name, float(selected_num_tests) / total_num_tests) 
-    else:
-        print "\Def{{{0}Ratio}}{{undef}}".format(project_name)
-
 """
 Read a file representing test to entities it covers
 
@@ -449,19 +434,18 @@ def remove_extra_tests(mapping, orig_file):
     return modified_mapping
 
 """
-Reduce a test suite
+Reduce a test suite, writing out reduced test suite one test per line to passed in output stream
+
+Args:
+    data_file - file representing test to what entities each covers,
+                each line is space delimited, first element is test, subsequent elements are entities covered
+    orig_file - file representing test suite to reduce, one test per line
+    out - stream to write out results to (like standard out)
+    percentage - percent of all entities that should be covered by reduced test suite, default being 100% of them
 """
-def reduce_suite(data_type, data_file, orig_file, project_name, algorithm, out, percentage=1.0):
-    if data_type == 'cov' or data_type == 'cmbr':
-        mapping = read(data_file)
-    elif data_type == 'mut':
-        mapping = read(data_file)
-        mapping = inverse_dict(mapping)
-    else:
-        print 'Incorrect data format, it should be either cov, mut, or cmbr'
-        return
+def reduce_suite(data_file, orig_file, algorithm, out, percentage=1.0):
+    mapping = read(data_file)
     mapping = remove_extra_tests(mapping, orig_file)
-    total_num_tests = len(mapping.keys())
 
     if algorithm == 'greedy':
         selected_tests = greedy(mapping, percentage)
@@ -479,7 +463,7 @@ def reduce_suite(data_type, data_file, orig_file, project_name, algorithm, out, 
         return
 
     for test in selected_tests:
-        out.write(test+'\n')
+        out.write(test + '\n')
 
 """
 Performs test-suite reduction based on tests and dependencies for a project,
@@ -488,27 +472,25 @@ outputting the reduced test suite to the console
 args:
 """
 def main(args):
-    if len(args) != 6 and len(args) != 7:
-        print 'Please provide 5 arguments: input type (cov, mut, cmbr), coverage file, original tests file, project name, and algorithm'
-        print 'An optional 6th argument specifies the percentage of coverage desired. Default is 100'
+    if len(args) != 4 and len(args) != 5:
+        print 'Please provide 3 arguments: coverage file, original tests file, and algorithm'
+        print 'An optional 4th argument specifies the percentage of coverage desired. Default is 100'
         return
 
-    data_type = args[1]
-    data_file = args[2]
-    orig_file = args[3]
-    project_name = args[4]
-    algorithm = args[5]
+    data_file = args[1]
+    orig_file = args[2]
+    algorithm = args[3]
 
-    if len(args) == 7:
-        percentage = float(args[6]) / 100
+    if len(args) == 5:
+        percentage = float(args[4]) / 100
     else :
         percentage = 1.0
 
-    if not algorithm in ['greedy', 'ge', 'gre', 'hgs']:
-        print 'No algorithm with this name found'
+    if not algorithm in ['greedy', 'ge', 'gre', 'hgs', 'random']:
+        print 'Not valid algorithm, please use greedy, ge, gre, hgs, or random'
         return
 
-    reduce_suite(data_type, data_file, orig_file, project_name, algorithm, sys.stdout, percentage)
+    reduce_suite(data_file, orig_file, algorithm, sys.stdout, percentage)
 
 if __name__ == '__main__':
     main(sys.argv)
