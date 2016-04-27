@@ -167,8 +167,8 @@ Returns:
 def remove_redundant(mapping):
     # First make a copy of the mapping into this modified one
     modified_mapping = {}
-    for test, entities in mapping:
-        modified_mapping[test] = entities
+    for test in mapping:
+        modified_mapping[test] = mapping[test]
 
     # Find and remove redundant tests (that are proper subsets)
     for t1 in modified_mapping.keys():
@@ -214,14 +214,14 @@ def gre(mapping, percentage=1.0):
     while len(covered_entities) < percentage * len(total_entities):
         mapping = remove_redundant(mapping)
         entity_to_test = inverse_dict(mapping)
-        new_selected, new_covered = find_essential(st_to_test, mapping)
+        new_selected, new_covered = find_essential(entity_to_test, mapping)
         if not new_selected:
             test = get_best_test(mapping)
             new_selected.add(test)
             new_covered = mapping[test]
 
         for entity in new_covered:
-            del entity_to_test[st]
+            del entity_to_test[entity]
         mapping = inverse_dict(entity_to_test)
         covered_entities |= new_covered
         reduced_testsuite |= new_selected
