@@ -104,7 +104,7 @@ def greedy(mapping, percentage=1.0):
         removeable = list(mapping[test])
         del mapping[test]
         for s in removeable:
-            mapping = remove_elem(mapping, s)
+            mapping = remove_entity(mapping, s)
         reduced_testsuite.add(test)
     return reduced_testsuite
 
@@ -398,19 +398,14 @@ Returns:
     dictionary from test to set of entities it covers
 """
 def read(data_file):
-    f = open(data_file)
-
     mapping = {}
-
-    for line in f:
-        elements = line.rstrip().split(' ')
-        test = elements[0]
-        mapping[test] = set()
-        for entity in elements[1:]:
-            if entity:                      # Avoid empty entities
-                mapping[test].add(entity)
+    with open(data_file) as f:
+        for line in f:
+            parts = line.strip().split()
+            test = parts[0]
+            entities = set(parts[1:])
+            mapping[test] = entities
     
-    f.close()
     return mapping
 
 """
@@ -430,7 +425,7 @@ def remove_extra_tests(mapping, orig_file):
     modified_mapping = {}
     for test in mapping.keys() :
         if test in orig_tests :
-            modified_mapping = mapping[test]
+            modified_mapping[test] = mapping[test]
     return modified_mapping
 
 """
