@@ -401,7 +401,7 @@ def read(data_file):
     mapping = {}
     with open(data_file) as f:
         for line in f:
-            parts = line.strip().split()
+            parts = line.strip().split(',')
             test = parts[0]
             entities = set(parts[1:])
             mapping[test] = entities
