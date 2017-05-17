@@ -401,10 +401,12 @@ def read(data_file):
     mapping = {}
     with open(data_file) as f:
         for line in f:
-            parts = line.strip().split()
+            parts = line.strip().split(',')
             test = parts[0]
+            if not test in mapping:
+                mapping[test] = set()
             entities = set(parts[1:])
-            mapping[test] = entities
+            mapping[test] |= entities
     
     return mapping
 
