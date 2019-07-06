@@ -6,19 +6,19 @@ import random
 # Remove element from all sets in dictionary
 # returns modified mapping
 """
-Helper function for removing a certain entity from all mappings in a dictionary
+Helper function for removing entities from all mappings in a dictionary
 
 Args:
     mapping - dictionary from test to set of entities it covers
-    entity - entity to delete from all sets of covered entities in mapping
+    entities - entities to delete from all sets of covered entities in mapping
 
 Returns:
     new dictionary from test to set of entities it covers, without a certain entity
 """
-def remove_entity(mapping, entity):
+def remove_entities(mapping, entities):
     modified_mapping = {}
     for key in mapping.keys():
-        modified_mapping[key] = mapping[key] - set([entity])
+        modified_mapping[key] = mapping[key] - set(entities)
 
     return modified_mapping
 
@@ -52,7 +52,7 @@ Returns:
 """
 def get_best_test(mapping):
     max_coverage = 1
-    for test in mapping.keys():
+    for test in sorted(mapping.keys()):
         if len(mapping[test]) >= max_coverage:
             current = test
             max_coverage = len(mapping[test])
@@ -103,8 +103,7 @@ def greedy(mapping, percentage=1.0):
             covered_entities.add(x)
         removeable = list(mapping[test])
         del mapping[test]
-        for s in removeable:
-            mapping = remove_entity(mapping, s)
+        mapping = remove_entities(mapping, removeable)
         reduced_testsuite.add(test)
     return reduced_testsuite
 
