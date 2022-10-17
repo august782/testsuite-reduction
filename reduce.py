@@ -391,7 +391,7 @@ Read a file representing test to entities it covers
 
 Args:
     data_file - file with mapping from test to entities each one covers,
-                each line is space-delimited, first element is test name, remaining elements are what it covers
+                each line is comma-delimited, first element is test name, remaining elements are what it covers
 
 Returns:
     dictionary from test to set of entities it covers
@@ -434,7 +434,7 @@ Reduce a test suite, writing out reduced test suite one test per line to passed 
 
 Args:
     data_file - file representing test to what entities each covers,
-                each line is space delimited, first element is test, subsequent elements are entities covered
+                each line is comma-delimited, first element is test, subsequent elements are entities covered
     orig_file - file representing test suite to reduce, one test per line
     out - stream to write out results to (like standard out)
     percentage - percent of all entities that should be covered by reduced test suite, default being 100% of them
